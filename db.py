@@ -52,5 +52,69 @@ class DB:
         ts = datetime.datetime.now().timestamp()
         return ts
 
+    def strip_bquote(self, s):
+        out = s
+        if s[0] == 'b' and s[1] == '\'':
+            out = ''
+            i = 2
+            while i < (s.__len__() - 1):
+                out = out + s[i]
+                i = i + 1
+        return out
+
+
+    def get_recent_data(self, ip ):
+        result = {}
+        conn = sqlite3.connect(self.dbname)
+        cur = conn.cursor()
+
+        cur.execute(self.most_recent_def)
+        conn.commit()
+
+        cmd = 'select id, ip, name, location, temperature, ts from recent where ip = ? '
+        cur.execute(cmd, (ip,))
+        row = cur.fetchone()
+        if row:
+            result = {
+                "id": int(row[0]),
+                "ip": str(row[1]),
+                "name": self.strip_bquote(str(row[2])),
+                "location": self.strip_bquote(str(row[3])),
+                "temperature": str(row[4]),
+                "ts": row[5]
+            }
+
+        cur.close()
+        return result
+
+
+    def get_dev_last_hour(self, ip ):
+        hour_ago = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%m:%S')
+        result = list()
+        conn = sqlite3.connect(self.dbname)
+        cur = conn.cursor()
+
+        cmd = 'select id, ip, name, location, temperature, ts, ' + \
+              "datetime(ts,12) as t2 " + \
+              'from data ' + \
+              'where (ip = ?) and (ts >= ?)' + \
+              'order by ts  '
+        cur.execute(cmd, (ip, hour_ago))
+        rows = cur.fetchall()
+        for row in rows:
+            item = {
+                "id": int(row[0]),
+                "ip": str(row[1]),
+                "name": self.strip_bquote(str(row[2])),
+                "location": self.strip_bquote(str(row[3])),
+                "temperature": float(row[4]),
+                "ts": str(row[5])
+            }
+            result.append(item)
+
+        cur.close()
+        return result
+
+
     def close(self):
         pass
