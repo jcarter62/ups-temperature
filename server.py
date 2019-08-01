@@ -12,7 +12,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/api/v1/latest')
+@app.route('/api/v1/latest', methods=['POST'])
 def api_v1_latest():
     data_list = []
     d = DeviceList()
@@ -25,7 +25,7 @@ def api_v1_latest():
     return result
 
 
-@app.route('/api/v1/devices')
+@app.route('/api/v1/devices', methods=['POST'])
 def api_v1_devices():
     data_list = []
     d = DeviceList()
@@ -44,7 +44,7 @@ def api_v1_devices():
     return result
 
 
-@app.route('/api/v1/dev_last_hour/<ip>')
+@app.route('/api/v1/dev_last_hour/<ip>', methods=['POST'])
 def api_v1_device(ip):
     data_list = []
     db = get_db_connection()
