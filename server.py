@@ -3,6 +3,7 @@ from devicelist import DeviceList
 from ups_snmp import UpsSnmp
 from db import DB
 from db_path import DbPath
+# from waitress import serve
 
 app = Flask(__name__)
 
@@ -70,3 +71,4 @@ def get_db_connection():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
 
+# serve(wsgiapp, listen='0.0.0.0:8000')
